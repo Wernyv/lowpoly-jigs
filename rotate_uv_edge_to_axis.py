@@ -20,12 +20,15 @@ def adjustUVedgeToXorYaxis(context):
 
     selects = []
     for face in bm.faces:                    # all faces
+        if face.hide == 1 or face.select == 0:
+            continue                         # skip hidden/unselected face
         for loop in face.loops:              # all loops
             loop_uv = loop[uv_layer]         # current layer
             if loop_uv.select:               # collect selected
                 if loop_uv.uv not in selects:  # and unique
                     selects.append(loop_uv.uv)
     if len(selects)!=2:
+        print("----")
         for s in selects:
             print(s)
         return
