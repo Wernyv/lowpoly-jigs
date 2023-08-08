@@ -58,6 +58,8 @@ def adjustUVedgeToXorYaxis(context):
     bmesh.update_edit_mesh(me) 
 
     for face in bm.faces:
+        if face.hide == 1 or face.select == 0:
+            continue                         # skip hidden/unselected face
         for loop in face.loops:
             loop_uv = loop[uv_layer]
             if loop_uv.select:
@@ -67,12 +69,12 @@ def adjustUVedgeToXorYaxis(context):
 
 
 bl_info = {
-"name": "rotate_uv_edge_to_axis",
+"name": "rotate_edge_to_axis",
 "author": "Wernyv",
 "version": (0, 1),
 "blender": (2, 80, 0),
 "location": "UV Editor > UV",
-"description": "rotate a selected uv-edge to axis with island",
+"description": "rotate UV-island containing one selected edge(or two vertices) to the near angle axis.",
 "warning": "",
 "support": 'TESTING',
 "wiki_url": "",
@@ -81,9 +83,9 @@ bl_info = {
 }
 
 class RotateUVedgeToXorYaxisWithIsland(bpy.types.Operator):
-    bl_idname = "uv.edge_rotate_axis"
-    bl_label = "UV island rotate to axis"
-    bl_description = "rotate selected UVedge to X or Y axis with island"
+    bl_idname = "uv.rotate_near_axis"
+    bl_label = "rotate island to axis"
+    bl_description = "rotate UV-island containing one selected edge(or two vertices) to the near angle axis."
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -95,7 +97,7 @@ classes = [
     ]
 
 def menu_func(self, context):
-    self.layout.operator("uv.edge_rotate_axis")
+    self.layout.operator("uv.rotate_near_axis")
 
 def register():
     for cls in classes:
