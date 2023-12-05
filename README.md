@@ -7,6 +7,3 @@ https://github.com/Wernyv/rotate_uv_edge_to_axis/assets/1202041/b4c45dd4-65a5-47
 Blender AddOn:project multiple vertices onto a face. the last three selected vertices are the projection destination surface
 
 
-
-https://github.com/Wernyv/rotate_uv_edge_to_axis/assets/1202041/2c589b7e-52e1-42b9-a865-aa5f90ba4270
-
