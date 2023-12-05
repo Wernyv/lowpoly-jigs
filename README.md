@@ -1,4 +1,4 @@
-narrow purposed addons for Blender
+Narrow-purpose add-ons for Blender
 
 ## rotate_uv_edge_to_axis
 Blender AddOn:Rotate a selected edge or vertex pair to align vertically or horizontally with island
