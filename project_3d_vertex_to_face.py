@@ -44,37 +44,41 @@ def project3DvertexToFace(context,direction):
 
     # ax + by + cz + d = 0
     d = -(vn.x*p0.x + vn.y*p0.y + vn.z*p0.z)
-
-    if direction == "Z":
-        # project Z axis  z = -(ax + by + d)/c
-        for v in project_v:
-            pn = bm.verts[v].co
-            pn.z = -(vn.x*pn.x + vn.y*pn.y + d) / vn.z
-    elif direction == "X":
-         # project x axis  z = -(by + cz + d)/a
-        for v in project_v:
-            pn = bm.verts[v].co
-            pn.x = -(vn.y*pn.y + vn.z*pn.z + d) / vn.x
-    elif direction == "Y":
-         # project x axis  z = -(ax + cz + d)/b
-        for v in project_v:
-            pn = bm.verts[v].co
-            pn.y = -(vn.x*pn.x + vn.z*pn.z + d) / vn.y
-    elif direction == "Normal":
-        # project Normal  pn = pn + t*normal
-        for v in project_v:
-            pn = bm.verts[v].co
-            # p = pn + t*vn
-            # a(pn.x + t*vn.x) + b(pn.y + t*vn.y) + c(pn.z + t*vn.z) + d
-            # a*pn.x + b*pn.y + c*pn.z + d + t(a*vn.x + b*vn.y + c*vn.z)
-            # t = -(a*pn.x + b*pn.y + c*pn.z + d)/(a*vn.x + b*vn.y + c*vn.z)
-            t = -(vn.x*pn.x + vn.y*pn.y + vn.z*pn.z + d)/(vn.x*vn.x + vn.y*vn.y + vn.z*vn.z)
-            #pn = pn + t*vn
-            pn.x = pn.x + t*vn.x
-            pn.y = pn.y + t*vn.y
-            pn.z = pn.z + t*vn.z
+    try:
+        if direction == "Z":
+            # project Z axis  z = -(ax + by + d)/c
+            for v in project_v:
+                pn = bm.verts[v].co
+                pn.z = -(vn.x*pn.x + vn.y*pn.y + d) / vn.z
+        elif direction == "X":
+             # project x axis  z = -(by + cz + d)/a
+            for v in project_v:
+                pn = bm.verts[v].co
+                pn.x = -(vn.y*pn.y + vn.z*pn.z + d) / vn.x
+        elif direction == "Y":
+             # project x axis  z = -(ax + cz + d)/b
+            for v in project_v:
+                pn = bm.verts[v].co
+                pn.y = -(vn.x*pn.x + vn.z*pn.z + d) / vn.y
+        elif direction == "Normal":
+            # project Normal  pn = pn + t*normal
+            for v in project_v:
+                pn = bm.verts[v].co
+                # p = pn + t*vn
+                # a(pn.x + t*vn.x) + b(pn.y + t*vn.y) + c(pn.z + t*vn.z) + d
+                # a*pn.x + b*pn.y + c*pn.z + d + t(a*vn.x + b*vn.y + c*vn.z)
+                # t = -(a*pn.x + b*pn.y + c*pn.z + d)/(a*vn.x + b*vn.y + c*vn.z)
+                t = -(vn.x*pn.x + vn.y*pn.y + vn.z*pn.z + d)/(vn.x*vn.x + vn.y*vn.y + vn.z*vn.z)
+                pn.x = pn.x + t*vn.x
+                pn.y = pn.y + t*vn.y
+                pn.z = pn.z + t*vn.z
+        else:
+            return False
+    except ZeroDivisionError:
+        return False
 
     bmesh.update_edit_mesh(me)
+    me.calc_normals()
     return True
 
 
@@ -83,8 +87,8 @@ bl_info = {
 "author": "Wernyv",
 "version": (0, 1),
 "blender": (2, 80, 0),
-"location": "View3D > Object",
-"description": "move one of the two selected UV-vertices to the other",
+"location": "View3D > Edit Mode > Vertex",
+"description": "project multiple vertices onto a face. the last three selected vertices are the projection destination surface",
 "warning": "",
 "support": 'TESTING',
 "wiki_url": "",
@@ -95,7 +99,7 @@ bl_info = {
 class ProjectVertexToFace(bpy.types.Operator):
     bl_idname = "3d.project_vertex_to_face"
     bl_label = "project vertex to face"
-    bl_description = "move one of the two selected UV-vertices to the other"
+    bl_description = "project multiple vertices onto a face."
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -107,7 +111,7 @@ class ProjectVertexToFace(bpy.types.Operator):
 
         bpy.ops.object.mode_set(mode=pre_mode)
         if stat==False:
-            self.report(type={'ERROR'}, message="Need to select at least one vertex")
+            self.report(type={'ERROR'}, message="Need to select at least 4 vertex")
             return {'CANCELLED'}
         else:
             return {'FINISHED'}
